@@ -1,0 +1,98 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Employee Attendance</title>
+
+<style>
+body{
+font-family: Arial;
+text-align:center;
+margin-top:80px;
+}
+
+input{
+padding:10px;
+margin:10px;
+width:200px;
+}
+
+button{
+padding:12px 25px;
+margin:10px;
+font-size:16px;
+cursor:pointer;
+}
+
+#status{
+margin-top:20px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Employee Attendance</h2>
+
+<input type="text" id="name" placeholder="Employee Name">
+
+<br>
+
+<button onclick="sendData('checkin')">Check In</button>
+<button onclick="sendData('checkout')">Check Out</button>
+
+<p id="status"></p>
+
+<script>
+
+function sendData(type){
+
+if(!navigator.geolocation){
+alert("المتصفح لا يدعم تحديد الموقع");
+return;
+}
+
+document.getElementById("status").innerText="جاري تحديد الموقع...";
+
+navigator.geolocation.getCurrentPosition(function(position){
+
+const lat = position.coords.latitude;
+const lon = position.coords.longitude;
+const name = document.getElementById("name").value;
+
+fetch("PUT-YOUR-N8N-WEBHOOK",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+employee:name,
+action:type,
+latitude:lat,
+longitude:lon,
+time:new Date().toISOString()
+})
+})
+
+.then(response=>response.json())
+.then(data=>{
+document.getElementById("status").innerText="تم تسجيل العملية";
+})
+
+.catch(error=>{
+document.getElementById("status").innerText="حدث خطأ";
+});
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
+```
